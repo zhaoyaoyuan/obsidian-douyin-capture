@@ -54,7 +54,7 @@ python web/app.py
 
 ### 2. 安装本插件
 
-#### 方式 A：从 Release 安装（推荐给普通用户）
+#### 方式 A：从 Release 安装
 
 1. 打开 [Releases](https://github.com/lyxdream/obsidian-douyin-capture/releases)，下载对应版本的压缩包（需包含 `main.js`、`manifest.json`、`styles.css`）。
 2. 解压到库目录：
@@ -69,6 +69,11 @@ python web/app.py
 
 3. Obsidian → **设置 → 第三方插件 → 关闭安全模式 → 启用「Douyin Capture」**。
 
+#### 方式 C：社区插件市场（推荐给普通用户）
+
+设置 → 第三方插件 → 浏览 → 搜索 **Douyin Capture** → 安装 → 启用。
+
+
 #### 方式 B：手动构建
 
 ```bash
@@ -80,11 +85,6 @@ npm run build
 
 将**整个插件目录**（含生成的 `main.js`）放入 `.obsidian/plugins/obsidian-douyin-capture/`，或在开发时用符号链接指向该目录。
 
-#### 方式 C：社区插件市场
-
-设置 → 第三方插件 → 浏览 → 搜索 **Douyin Capture** → 安装 → 启用。
-
-> 上架前请自行确认社区审核状态；当前版本可能仍需方式 A/B。
 
 ### 3. 配置插件
 
