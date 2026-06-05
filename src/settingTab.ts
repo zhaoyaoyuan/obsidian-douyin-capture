@@ -12,7 +12,6 @@ export class DouyinSettingTab extends PluginSettingTab {
   display(): void {
     const { containerEl } = this;
     containerEl.empty();
-    new Setting(containerEl).setName("Douyin Capture").setHeading();
 
     containerEl.createEl("p", {
       text: "需先启动本地后端 obsidian-content-capture-backend（python web/app.py）",
