@@ -1,12 +1,16 @@
-# Douyin Capture
+# Douyin Capture Pro
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+> **Fork 声明**：本项目基于 [lyxdream/obsidian-douyin-capture](https://github.com/lyxdream/obsidian-douyin-capture) 修改，原代码地址：https://github.com/lyxdream/obsidian-douyin-capture
 
 **Language / 语言:** [English](#english) · [中文](#chinese)
 
 ---
 
 <h2 id="english">English</h2>
+
+> **Fork Note**: This project is forked from [lyxdream/obsidian-douyin-capture](https://github.com/lyxdream/obsidian-douyin-capture). Original repository: https://github.com/lyxdream/obsidian-douyin-capture
 
 Import Douyin (TikTok China) share links or pasted share text into your Obsidian vault. Download no-watermark videos, carousel images, and captions, then create structured notes with titles, hashtags, tags, and frontmatter. Video posts can be transcribed to Simplified Chinese with a local Whisper backend. All media stays on your machine.
 
@@ -192,6 +196,8 @@ Douyin content and platform rules belong to the platform. Use this tool for **pe
 ---
 
 <h2 id="chinese">中文</h2>
+
+> **Fork 声明**：本项目基于 [lyxdream/obsidian-douyin-capture](https://github.com/lyxdream/obsidian-douyin-capture) 修改，原代码地址：https://github.com/lyxdream/obsidian-douyin-capture
 
 将抖音分享链接一键导入 Obsidian：在本地提取**视频 / 配图 / 文案**，自动生成结构化笔记。
 
