@@ -8,7 +8,13 @@ import {
   type DouyinPluginSettings,
 } from "./settings";
 import { MSG, formatExtractError } from "./messages";
-import { checkHealth, extractContent, type ExtractMode } from "./backend";
+import {
+  checkHealth,
+  checkCliAvailability,
+  extractContent,
+  extractContentViaCli,
+  type ExtractMode,
+} from "./backend";
 import { writeNoteFromExtract, extractDouyinLink } from "./vaultWriter";
 import { ExtractModal } from "./modal";
 import { DouyinSettingTab } from "./settingTab";
@@ -70,6 +76,13 @@ export default class DouyinCapturePlugin extends Plugin {
   }
 
   async checkBackendStatus(): Promise<string> {
+    if (this.settings.connectionMode === "cli") {
+      const r = await checkCliAvailability(this.settings.backendPath);
+      if (r.ok) {
+        return MSG.settings.cliAvailable;
+      }
+      return MSG.settings.cliUnavailable(r.error || "");
+    }
     const r = await checkHealth(this.settings.serverUrl);
     if (r.ok) {
       return MSG.settings.connected(this.settings.serverUrl);
@@ -78,8 +91,15 @@ export default class DouyinCapturePlugin extends Plugin {
   }
 
   private async probeBackendOnStartup(): Promise<void> {
-    const r = await checkHealth(this.settings.serverUrl);
-    if (!r.ok) {
+    let ok = false;
+    if (this.settings.connectionMode === "cli") {
+      const r = await checkCliAvailability(this.settings.backendPath);
+      ok = r.ok;
+    } else {
+      const r = await checkHealth(this.settings.serverUrl);
+      ok = r.ok;
+    }
+    if (!ok) {
       this.setStatusBar(MSG.statusBar.disconnected, () => {
         this.openSettingsTab();
       });
@@ -119,6 +139,15 @@ export default class DouyinCapturePlugin extends Plugin {
   }
 
   async showHealthNotice(): Promise<void> {
+    if (this.settings.connectionMode === "cli") {
+      const r = await checkCliAvailability(this.settings.backendPath);
+      if (r.ok) {
+        this.noticeSuccess("抖音后端：CLI 可用");
+      } else {
+        this.noticeError(MSG.error.e01Title, r.error || MSG.error.cliExecFailed);
+      }
+      return;
+    }
     const r = await checkHealth(this.settings.serverUrl);
     if (r.ok) {
       this.noticeSuccess(`抖音后端：连接正常（${this.settings.serverUrl}）`);
@@ -128,7 +157,7 @@ export default class DouyinCapturePlugin extends Plugin {
         MSG.error.healthFail(r.status)
       );
     } else {
-      this.noticeError(MSG.error.e01Title, MSG.error.e01Body);
+      this.noticeError(MSG.error.e01Title, MSG.error.e01BodyHttp);
     }
   }
 
@@ -158,16 +187,27 @@ export default class DouyinCapturePlugin extends Plugin {
     const vaultStep = options.vaultStepIndex ?? (videoOnly ? 4 : 5);
 
     onStep?.(0, "active");
-    const health = await checkHealth(this.settings.serverUrl);
-    if (!health.ok) {
+    let backendOk = false;
+    let backendErr = "";
+    if (this.settings.connectionMode === "cli") {
+      const cliCheck = await checkCliAvailability(this.settings.backendPath);
+      backendOk = cliCheck.ok;
+      backendErr = cliCheck.error || "";
+    } else {
+      const health = await checkHealth(this.settings.serverUrl);
+      backendOk = health.ok;
       if (health.status) {
-        this.noticeError(
-          "本地服务异常",
-          MSG.error.healthFail(health.status)
-        );
-      } else {
-        this.noticeError(MSG.error.e01Title, MSG.error.e01Body);
+        backendErr = MSG.error.healthFail(health.status);
+      } else if (health.error) {
+        backendErr = health.error;
       }
+    }
+    if (!backendOk) {
+      const errBody =
+        this.settings.connectionMode === "cli"
+          ? backendErr || MSG.error.e01BodyCli
+          : backendErr || MSG.error.e01BodyHttp;
+      this.noticeError(MSG.error.e01Title, errBody);
       return;
     }
     onStep?.(0, "done");
@@ -175,7 +215,11 @@ export default class DouyinCapturePlugin extends Plugin {
     onStep?.(1, "active");
     let data;
     try {
-      data = await extractContent(this.settings, shareText, mode);
+      if (this.settings.connectionMode === "cli") {
+        data = await extractContentViaCli(this.settings, shareText, mode);
+      } else {
+        data = await extractContent(this.settings, shareText, mode);
+      }
     } catch (e) {
       onStep?.(1, "done");
       if (String(e).includes("INVALID_JSON")) {

@@ -1,5 +1,9 @@
+export type ConnectionMode = "http" | "cli";
+
 export interface DouyinPluginSettings {
+  connectionMode: ConnectionMode;
   serverUrl: string;
+  backendPath: string;
   whisperModel: string;
   noteFolder: string;
   attachmentFolder: string;
@@ -8,7 +12,9 @@ export interface DouyinPluginSettings {
 }
 
 export const DEFAULT_SETTINGS: DouyinPluginSettings = {
+  connectionMode: "http",
   serverUrl: "http://127.0.0.1:5050",
+  backendPath: "",
   whisperModel: "small",
   noteFolder: "Douyin",
   attachmentFolder: "attachments/douyin",

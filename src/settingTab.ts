@@ -9,22 +9,10 @@ export class DouyinSettingTab extends PluginSettingTab {
     super(app, plugin);
   }
 
-  display(): void {
-    const { containerEl } = this;
-    containerEl.empty();
+  private renderConnectionSettings(containerEl: HTMLElement, statusEl: HTMLElement): void {
+    const isHttp = this.plugin.settings.connectionMode === "http";
 
-    containerEl.createEl("p", {
-      text: "需先启动本地后端 obsidian-content-capture-backend（python web/app.py）",
-      cls: "douyin-settings-hint",
-    });
-
-    const statusEl = containerEl.createDiv({ cls: "douyin-settings-status" });
-    statusEl.setText(this.statusText);
-    void this.plugin.checkBackendStatus().then((s) => {
-      statusEl.setText(s);
-    });
-
-    new Setting(containerEl)
+    const serverUrlSetting = new Setting(containerEl)
       .setName("后端地址")
       .setDesc("默认 http://127.0.0.1:5050")
       .addText((text) =>
@@ -39,6 +27,61 @@ export class DouyinSettingTab extends PluginSettingTab {
             })();
           })
       );
+    serverUrlSetting.settingEl.style.display = isHttp ? "" : "none";
+
+    const backendPathSetting = new Setting(containerEl)
+      .setName("后端项目路径")
+      .setDesc("obsidian-content-capture-backend 目录的绝对或相对路径")
+      .addText((text) =>
+        text
+          .setValue(this.plugin.settings.backendPath)
+          .onChange((value) => {
+            this.plugin.settings.backendPath = value.trim();
+            void (async () => {
+              await this.plugin.saveSettings();
+              statusEl.setText(MSG.settings.checking);
+              statusEl.setText(await this.plugin.checkBackendStatus());
+            })();
+          })
+      );
+    backendPathSetting.settingEl.style.display = isHttp ? "none" : "";
+  }
+
+  display(): void {
+    const { containerEl } = this;
+    containerEl.empty();
+
+    const hintText =
+      this.plugin.settings.connectionMode === "cli"
+        ? "使用 CLI 模式时，请配置 obsidian-content-capture-backend 目录路径"
+        : "需先启动本地后端 obsidian-content-capture-backend（python web/app.py）";
+    containerEl.createEl("p", {
+      text: hintText,
+      cls: "douyin-settings-hint",
+    });
+
+    const statusEl = containerEl.createDiv({ cls: "douyin-settings-status" });
+    statusEl.setText(this.statusText);
+    void this.plugin.checkBackendStatus().then((s) => {
+      statusEl.setText(s);
+    });
+
+    new Setting(containerEl)
+      .setName("连接方式")
+      .setDesc("选择连接本地后端的方式")
+      .addDropdown((drop) => {
+        drop.addOptions({
+          http: "HTTP 服务",
+          cli: "CLI 命令",
+        });
+        drop.setValue(this.plugin.settings.connectionMode).onChange((v) => {
+          this.plugin.settings.connectionMode = v as "http" | "cli";
+          void this.plugin.saveSettings();
+          this.display();
+        });
+      });
+
+    this.renderConnectionSettings(containerEl, statusEl);
 
     new Setting(containerEl)
       .setName("Whisper 模型")

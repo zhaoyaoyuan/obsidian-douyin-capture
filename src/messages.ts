@@ -32,8 +32,10 @@ export const MSG = {
   },
   error: {
     e01Title: "无法连接本地服务",
-    e01Body:
+    e01BodyHttp:
       "未检测到抖音提取后端。请在终端运行：python web/app.py（默认 http://127.0.0.1:5050）",
+    e01BodyCli:
+      "未检测到抖音提取后端 CLI。请确认「后端项目路径」指向 obsidian-content-capture-backend 目录，且已创建 .venv 虚拟环境。",
     e03Title: "请输入链接",
     e03Body: "请粘贴抖音分享短链或整段分享文案。",
     e04Title: "剪贴板中无有效链接",
@@ -44,11 +46,18 @@ export const MSG = {
       `后端返回错误（${status}）。请查看运行 web/app.py 的终端日志。`,
     jsonInvalid: "后端返回了无法识别的数据，请升级插件与后端到匹配版本。",
     emptyText: "提取完成但没有文案内容。",
+    cliNotConfigured: "后端项目路径未配置。请在设置中指定 obsidian-content-capture-backend 目录路径。",
+    cliVenvMissing: (path: string) =>
+      `未找到 Python 虚拟环境：${path}。请先运行：python3 -m venv .venv && pip install -r requirements.txt`,
+    cliExecFailed: "CLI 执行失败",
+    cliParseOutDir: "无法解析 CLI 输出目录",
   },
   settings: {
     checking: "检测中…",
     connected: (url: string) => `● 已连接（${url}）`,
     disconnected: "● 未连接 — 请运行 python web/app.py",
+    cliAvailable: "● CLI 可用",
+    cliUnavailable: (err: string) => `● CLI 不可用 — ${err}`,
   },
   statusBar: {
     disconnected: "抖音后端未连接",
