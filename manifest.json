@@ -1,0 +1,10 @@
+{
+  "id": "douyin-capture",
+  "name": "Douyin Capture",
+  "version": "1.0.5",
+  "minAppVersion": "1.4.0",
+  "description": "Import Douyin links or pasted share text into notes with no-watermark videos, images, and captions. Add titles, topics, tags, and frontmatter. Local Whisper to Simplified Chinese; data stays on-device. Requires local Python backend (see README).",
+  "author": "zhaoyaoyuan",
+  "authorUrl": "https://github.com/zhaoyaoyuan",
+  "isDesktopOnly": true
+}
